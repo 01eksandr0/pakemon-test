@@ -1,36 +1,26 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 import { Image, StyleSheet, Text, TouchableOpacity } from "react-native";
 
 type Props = {
   url: string;
   name: string;
+  id: string;
 };
 
-type Data = {
-  sprites?: object;
-};
-export const PokemonCart = ({ url, name }: Props) => {
-  const [info, setInfo] = useState({});
-  useEffect(() => {
-    const fetchInfo = async () => {
-      try {
-        const { data } = await axios.get(url);
-        console.log(data);
-
-        setInfo(data);
-      } catch (error) {}
-    };
-    fetchInfo();
-  });
+export const PokemonCart = ({ url, name, id }: Props) => {
+  const nav = useNavigation();
   return (
-    <TouchableOpacity style={s.item}>
+    <TouchableOpacity
+      style={s.item}
+      onPress={() => nav.navigate("Moreinfo", { id })}
+    >
       <Image
         style={s.img}
         source={{
-          uri: info.sprites.front_default,
+          uri: url,
         }}
       />
+
       <Text style={s.text}>{name}</Text>
     </TouchableOpacity>
   );
@@ -53,5 +43,8 @@ const s = StyleSheet.create({
   img: {
     height: 50,
     width: 50,
+  },
+  text: {
+    color: "#fff",
   },
 });

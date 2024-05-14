@@ -1,29 +1,29 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { fetchPokemons } from "../redux/operations";
 import { SearchBar } from "../components/SearchBar";
-import { selectFilterPokemons } from "../redux/selectors";
-import { PokemonCart } from "../components/PokemonCart";
+import { ListPokemon } from "../components/ListPokemon";
+import { selectPokemons } from "../redux/selectors";
+import { useNavigation } from "@react-navigation/native";
 
 export const Pokemons = () => {
   const dispatch = useDispatch();
-  const list = useSelector(selectFilterPokemons);
+  const nav = useNavigation();
+  const { isLoading, error } = useSelector(selectPokemons);
   useEffect(() => {
     dispatch(fetchPokemons());
   }, []);
+  useEffect(() => {
+    if (!error) return;
+    nav.navigate("Error", { title: error });
+  }, [error]);
   return (
     <View style={s.container}>
       <Text style={s.title}>Pokemons</Text>
       <SearchBar />
-      <FlatList
-        data={list}
-        renderItem={({ item }) => (
-          <PokemonCart name={item.name} url={item.url} />
-        )}
-        keyExtractor={(item) => item.id.toString()}
-      />
+      {!isLoading && <ListPokemon />}
     </View>
   );
 };

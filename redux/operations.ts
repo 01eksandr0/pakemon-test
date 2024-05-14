@@ -8,10 +8,13 @@ export const fetchPokemons = createAsyncThunk(
       const { data } = await axios.get(
         "https://pokeapi.co/api/v2/pokemon/?limit=20"
       );
-      const list = data.results.map((item: {}, index: number) => ({
-        ...item,
-        id: index + 1,
-      }));
+      const { results } = data;
+      const list = await Promise.all(
+        results.map(async (pokemon) => {
+          const { data: info } = await axios.get(pokemon.url);
+          return info;
+        })
+      );
       return list;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
